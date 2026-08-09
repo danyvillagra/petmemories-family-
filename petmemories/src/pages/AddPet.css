@@ -1,0 +1,37 @@
+.add-header { margin-bottom: 1.5rem; }
+.add-header p { margin-top: 0.4rem; color: var(--text-muted); }
+.add-form { display: flex; flex-direction: column; gap: 0; }
+.form-section { padding: 1.5rem 0; border-bottom: 1.5px solid var(--border); }
+.form-section:last-of-type { border-bottom: none; }
+.form-section h3 { margin-bottom: 1rem; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+@media (max-width: 540px) { .form-row { grid-template-columns: 1fr; } }
+
+.color-picker { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+.color-dot {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s, border-color 0.15s;
+}
+.color-dot:hover { transform: scale(1.15); }
+.color-dot.selected { border-color: var(--bark); transform: scale(1.2); box-shadow: 0 0 0 2px white, 0 0 0 4px var(--bark); }
+
+.relation-grid { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.relation-chip {
+  padding: 0.35rem 0.9rem;
+  border-radius: var(--radius-xl);
+  border: 2px solid var(--border);
+  background: white;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.relation-chip:hover { background: var(--sand); }
+.relation-chip.selected { background: var(--leaf); color: white; border-color: var(--leaf-dark); }
+
+.form-actions { display: flex; justify-content: flex-end; gap: 0.8rem; padding-top: 1.5rem; }

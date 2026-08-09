@@ -1,0 +1,27 @@
+.tree-header { margin-bottom: 1.5rem; }
+.tree-header p { color: var(--text-muted); margin-top: 0.4rem; }
+.tree-canvas {
+  overflow: hidden;
+  background: var(--warm-white);
+  min-height: 500px;
+  cursor: grab;
+}
+.tree-canvas:active { cursor: grabbing; }
+.tree-node { transition: opacity 0.2s; }
+.tree-node:hover { opacity: 0.85; }
+.tree-legend {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+.legend-dot { width: 20px; height: 20px; border-radius: 50%; }

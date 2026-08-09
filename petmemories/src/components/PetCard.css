@@ -1,0 +1,65 @@
+.pet-card {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+}
+
+.pet-card-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.2rem 1.2rem 1rem;
+  border-bottom: 2px solid var(--border);
+  position: relative;
+}
+
+.pet-card-avatar { position: relative; flex-shrink: 0; }
+.memory-ribbon {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  font-size: 1rem;
+  background: white;
+  border-radius: 50%;
+  padding: 1px;
+  line-height: 1;
+}
+
+.pet-card-name {
+  font-size: 1.3rem;
+  color: var(--bark);
+  margin-bottom: 0.3rem;
+}
+.pet-card-meta { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.pet-breed { font-size: 0.8rem; color: var(--text-muted); font-style: italic; }
+
+.pet-desc {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 1rem;
+  min-height: 2.6em;
+}
+
+.pet-card-stats {
+  display: flex;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+.pet-stat {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  background: var(--sand);
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--radius-xl);
+}
+.stat-emoji { font-size: 0.9rem; }
