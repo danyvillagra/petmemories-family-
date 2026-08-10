@@ -7,19 +7,21 @@ const SPECIES_EMOJI = {
   'Pez': '🐠', 'Tortuga': '🐢', 'Hámster': '🐹', 'Otro': '🐾',
 }
 
-export default function PetProfile({ pets, addComment, addAnecdote, setCartoonAvatar, deletePet }) {
+export default function PetProfile({ pets, username, addComment, addAnecdote, setCartoonAvatar, deletePet, addPhoto, exportPet }) {
   const { id } = useParams()
   const navigate = useNavigate()
   const pet = pets.find(p => p.id === id)
 
   const [commentText, setCommentText] = useState('')
-  const [commentAuthor, setCommentAuthor] = useState('')
   const [anecdoteTitle, setAnecdoteTitle] = useState('')
   const [anecdoteStory, setAnecdoteStory] = useState('')
+  const [anecdotePhoto, setAnecdotePhoto] = useState(null)
   const [showAnecdoteForm, setShowAnecdoteForm] = useState(false)
   const [activeTab, setActiveTab] = useState('info')
   const [generatingAvatar, setGeneratingAvatar] = useState(false)
   const [uploadedPhoto, setUploadedPhoto] = useState(null)
+  const [photoCaption, setPhotoCaption] = useState('')
+  const [lightboxSrc, setLightboxSrc] = useState(null)
 
   if (!pet) return (
     <div className="page container">
@@ -38,18 +40,23 @@ export default function PetProfile({ pets, addComment, addAnecdote, setCartoonAv
 
   const handleComment = (e) => {
     e.preventDefault()
-    if (!commentText.trim() || !commentAuthor.trim()) return
-    addComment(pet.id, commentText, commentAuthor)
+    if (!commentText.trim()) return
+    addComment(pet.id, commentText, username || 'Anónimo')
     setCommentText('')
-    setCommentAuthor('')
   }
 
   const handleAnecdote = (e) => {
     e.preventDefault()
     if (!anecdoteTitle.trim() || !anecdoteStory.trim()) return
-    addAnecdote(pet.id, { title: anecdoteTitle, story: anecdoteStory, photo: null })
+    addAnecdote(pet.id, {
+      title: anecdoteTitle,
+      story: anecdoteStory,
+      photo: anecdotePhoto,
+      author: username || 'Anónimo',
+    })
     setAnecdoteTitle('')
     setAnecdoteStory('')
+    setAnecdotePhoto(null)
     setShowAnecdoteForm(false)
   }
 
@@ -59,6 +66,21 @@ export default function PetProfile({ pets, addComment, addAnecdote, setCartoonAv
     const reader = new FileReader()
     reader.onload = (ev) => setUploadedPhoto(ev.target.result)
     reader.readAsDataURL(file)
+  }
+
+  const handleAnecdotePhotoUpload = (e) => {
+    const file = e.target.files[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = (ev) => setAnecdotePhoto(ev.target.result)
+    reader.readAsDataURL(file)
+  }
+
+  const handleAddPhoto = () => {
+    if (!uploadedPhoto) return
+    addPhoto(pet.id, uploadedPhoto, photoCaption)
+    setUploadedPhoto(null)
+    setPhotoCaption('')
   }
 
   const handleGenerateAvatar = async () => {
@@ -102,8 +124,23 @@ export default function PetProfile({ pets, addComment, addAnecdote, setCartoonAv
     }
   }
 
+  const gallery = pet.gallery || []
+
   return (
     <div className="page profile-page">
+      {lightboxSrc && (
+        <div
+          onClick={() => setLightboxSrc(null)}
+          style={{
+            position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            zIndex: 999, cursor: 'zoom-out',
+          }}
+        >
+          <img src={lightboxSrc} alt="" style={{ maxWidth: '90vw', maxHeight: '90vh', borderRadius: 8 }} />
+        </div>
+      )}
+
       <div className="container">
         {/* Header */}
         <div className="profile-header card fade-in" style={{ '--pet-color': pet.color || '#E8875A' }}>
@@ -133,6 +170,7 @@ export default function PetProfile({ pets, addComment, addAnecdote, setCartoonAv
                 <div className="vital"><span>🎂</span><strong>{pet.birthYear}</strong><span>nacimiento</span></div>
                 {pet.deathYear && <div className="vital"><span>🕊️</span><strong>{pet.deathYear}</strong><span>partida</span></div>}
                 <div className="vital"><span>⏳</span><strong>{age}</strong><span>{age === 1 ? 'año' : 'años'}</span></div>
+                <div className="vital"><span>📷</span><strong>{gallery.length}</strong><span>fotos</span></div>
                 <div className="vital"><span>💬</span><strong>{pet.comments.length}</strong><span>comentarios</span></div>
                 <div className="vital"><span>📖</span><strong>{pet.anecdotes.length}</strong><span>anécdotas</span></div>
               </div>
@@ -140,7 +178,7 @@ export default function PetProfile({ pets, addComment, addAnecdote, setCartoonAv
             </div>
           </div>
           <div className="profile-header-actions">
-            <Link to={`/edit/${pet.id}`} className="btn btn-secondary btn-sm">✏️ Editar</Link>
+            <button onClick={() => exportPet(pet.id)} className="btn btn-secondary btn-sm">📤 Exportar</button>
             <button onClick={handleDelete} className="btn btn-sm" style={{ background: '#FEE2E2', color: '#991B1B', borderColor: '#FCA5A5' }}>🗑️ Eliminar</button>
           </div>
         </div>
@@ -181,13 +219,14 @@ export default function PetProfile({ pets, addComment, addAnecdote, setCartoonAv
 
         {/* Tabs */}
         <div className="profile-tabs">
-          {['info', 'anecdotes', 'comments', 'avatar'].map(tab => (
+          {['info', 'photos', 'anecdotes', 'comments', 'avatar'].map(tab => (
             <button
               key={tab}
               className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
               onClick={() => setActiveTab(tab)}
             >
               {tab === 'info' && '📋 Info'}
+              {tab === 'photos' && `📷 Fotos (${gallery.length})`}
               {tab === 'anecdotes' && `📖 Anécdotas (${pet.anecdotes.length})`}
               {tab === 'comments' && `💬 Comentarios (${pet.comments.length})`}
               {tab === 'avatar' && '🎨 Avatar IA'}
@@ -219,6 +258,57 @@ export default function PetProfile({ pets, addComment, addAnecdote, setCartoonAv
             </div>
           )}
 
+          {activeTab === 'photos' && (
+            <div>
+              {/* Upload form */}
+              <div className="card card-body" style={{ marginBottom: '1rem' }}>
+                <h3>📷 Agregar foto</h3>
+                <div style={{ marginTop: '1rem' }}>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    capture="environment"
+                    onChange={handlePhotoUpload}
+                    className="form-input"
+                  />
+                  {uploadedPhoto && (
+                    <>
+                      <img src={uploadedPhoto} alt="Preview" style={{ width: '100%', maxHeight: 200, objectFit: 'cover', borderRadius: 8, marginTop: '0.75rem' }} />
+                      <input
+                        className="form-input"
+                        style={{ marginTop: '0.75rem' }}
+                        placeholder="Descripción (opcional)"
+                        value={photoCaption}
+                        onChange={e => setPhotoCaption(e.target.value)}
+                      />
+                      <button className="btn btn-primary" style={{ marginTop: '0.75rem' }} onClick={handleAddPhoto}>
+                        💾 Guardar foto
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {/* Gallery grid */}
+              {gallery.length === 0 ? (
+                <div className="empty-state"><div className="emoji">📷</div><p>Todavía no hay fotos. ¡Subí la primera!</p></div>
+              ) : (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: '0.75rem' }}>
+                  {[...gallery].reverse().map(ph => (
+                    <div key={ph.id} style={{ borderRadius: 8, overflow: 'hidden', cursor: 'zoom-in', position: 'relative' }} onClick={() => setLightboxSrc(ph.url)}>
+                      <img src={ph.url} alt={ph.caption} style={{ width: '100%', height: 140, objectFit: 'cover', display: 'block' }} />
+                      {ph.caption && (
+                        <div style={{ padding: '0.4rem 0.5rem', background: 'var(--surface)', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                          {ph.caption}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
           {activeTab === 'anecdotes' && (
             <div>
               <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
@@ -228,7 +318,7 @@ export default function PetProfile({ pets, addComment, addAnecdote, setCartoonAv
               </div>
               {showAnecdoteForm && (
                 <form onSubmit={handleAnecdote} className="card card-body" style={{ marginBottom: '1rem' }}>
-                  <h3>📖 Nueva anécdota</h3>
+                  <h3>📖 Nueva anécdota — <span style={{ color: 'var(--primary)', fontSize: '0.9em' }}>{username || 'Anónimo'}</span></h3>
                   <div className="form-group" style={{ marginTop: '1rem' }}>
                     <label className="form-label">Título</label>
                     <input className="form-input" value={anecdoteTitle} onChange={e => setAnecdoteTitle(e.target.value)} placeholder="Ej: El gran escape" required />
@@ -236,6 +326,11 @@ export default function PetProfile({ pets, addComment, addAnecdote, setCartoonAv
                   <div className="form-group">
                     <label className="form-label">Historia</label>
                     <textarea className="form-textarea" value={anecdoteStory} onChange={e => setAnecdoteStory(e.target.value)} placeholder="Contá lo que pasó..." required />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Foto (opcional)</label>
+                    <input type="file" accept="image/*" capture="environment" onChange={handleAnecdotePhotoUpload} className="form-input" />
+                    {anecdotePhoto && <img src={anecdotePhoto} alt="" style={{ marginTop: '0.5rem', width: '100%', maxHeight: 150, objectFit: 'cover', borderRadius: 8 }} />}
                   </div>
                   <button type="submit" className="btn btn-primary">💾 Guardar anécdota</button>
                 </form>
@@ -248,9 +343,13 @@ export default function PetProfile({ pets, addComment, addAnecdote, setCartoonAv
                     <div key={a.id} className="anecdote-card card card-body">
                       <div className="anecdote-header">
                         <h3>{a.title}</h3>
-                        <span className="anecdote-date">{a.date}</span>
+                        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                          {a.author && <span style={{ fontSize: '0.8rem', color: 'var(--primary)', fontWeight: 600 }}>✍️ {a.author}</span>}
+                          <span className="anecdote-date">{a.date}</span>
+                        </div>
                       </div>
                       <p style={{ marginTop: '0.5rem' }}>{a.story}</p>
+                      {a.photo && <img src={a.photo} alt="" style={{ marginTop: '0.75rem', width: '100%', maxHeight: 200, objectFit: 'cover', borderRadius: 8, cursor: 'zoom-in' }} onClick={() => setLightboxSrc(a.photo)} />}
                     </div>
                   ))}
                 </div>
@@ -261,10 +360,16 @@ export default function PetProfile({ pets, addComment, addAnecdote, setCartoonAv
           {activeTab === 'comments' && (
             <div>
               <form onSubmit={handleComment} className="card card-body" style={{ marginBottom: '1rem' }}>
-                <h3>💬 Agregar comentario</h3>
+                <h3>💬 Comentar como <span style={{ color: 'var(--primary)' }}>{username || 'Anónimo'}</span></h3>
                 <div className="comment-form-row" style={{ marginTop: '1rem' }}>
-                  <input className="form-input" style={{ flex: 1 }} value={commentAuthor} onChange={e => setCommentAuthor(e.target.value)} placeholder="Tu nombre" required />
-                  <input className="form-input" style={{ flex: 3 }} value={commentText} onChange={e => setCommentText(e.target.value)} placeholder="Escribí un recuerdo o comentario..." required />
+                  <input
+                    className="form-input"
+                    style={{ flex: 1 }}
+                    value={commentText}
+                    onChange={e => setCommentText(e.target.value)}
+                    placeholder="Escribí un recuerdo o comentario..."
+                    required
+                  />
                   <button type="submit" className="btn btn-primary">Enviar</button>
                 </div>
               </form>
@@ -301,7 +406,7 @@ export default function PetProfile({ pets, addComment, addAnecdote, setCartoonAv
                   </div>
                 )}
               </div>
-              <input type="file" accept="image/*" onChange={handlePhotoUpload} className="form-input" style={{ marginTop: '1rem' }} />
+              <input type="file" accept="image/*" capture="environment" onChange={handlePhotoUpload} className="form-input" style={{ marginTop: '1rem' }} />
               <button
                 className="btn btn-primary"
                 style={{ marginTop: '1rem' }}

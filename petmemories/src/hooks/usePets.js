@@ -80,9 +80,43 @@ export function usePets() {
     ))
   }, [])
 
-  const resetToSampleData = useCallback(() => {
-    setPets(initialData)
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(initialData))
+  const addPhoto = useCallback((petId, dataUrl, caption = '') => {
+    const photo = {
+      id: `ph-${uuidv4().slice(0, 8)}`,
+      url: dataUrl,
+      caption,
+      date: new Date().toISOString().slice(0, 10),
+    }
+    setPets(prev => prev.map(p =>
+      p.id === petId ? { ...p, gallery: [...(p.gallery || []), photo] } : p
+    ))
+  }, [])
+
+  const exportPet = useCallback((petId) => {
+    const pet = pets.find(p => p.id === petId)
+    if (!pet) return
+    const json = JSON.stringify(pet, null, 2)
+    const blob = new Blob([json], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `${pet.name.toLowerCase().replace(/\s+/g, '-')}-petmemories.json`
+    a.click()
+    URL.revokeObjectURL(url)
+  }, [pets])
+
+  const importPet = useCallback((jsonString) => {
+    const data = JSON.parse(jsonString)
+    if (!data.name || !data.species) throw new Error('Invalid pet data')
+    const newPet = {
+      ...data,
+      id: `pet-${uuidv4().slice(0, 8)}`,
+      parents: [],
+      offspring: [],
+      lastModified: new Date().toISOString().slice(0, 10),
+    }
+    setPets(prev => [...prev, newPet])
+    return newPet
   }, [])
 
   return {
@@ -94,6 +128,8 @@ export function usePets() {
     addComment,
     addAnecdote,
     setCartoonAvatar,
-    resetToSampleData,
+    addPhoto,
+    exportPet,
+    importPet,
   }
 }

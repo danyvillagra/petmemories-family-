@@ -5,7 +5,7 @@ import './AddPet.css'
 const SPECIES = ['Perro', 'Gato', 'Conejo', 'Pájaro', 'Pez', 'Tortuga', 'Hámster', 'Otro']
 const COLORS = ['#E8875A', '#6AAF7B', '#7AB8D4', '#A98FCC', '#F2C14E', '#1F2937', '#8B6344', '#E07070']
 
-export default function AddPet({ pets, addPet }) {
+export default function AddPet({ pets, addPet, username }) {
   const navigate = useNavigate()
   const [form, setForm] = useState({
     name: '', species: 'Perro', breed: '', gender: 'macho',
@@ -30,6 +30,7 @@ export default function AddPet({ pets, addPet }) {
       ...form,
       birthYear: parseInt(form.birthYear),
       deathYear: form.deathYear ? parseInt(form.deathYear) : null,
+      addedBy: username || 'familia',
     })
     navigate(`/pet/${newId}`)
   }
