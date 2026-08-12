@@ -9,6 +9,7 @@ import PetProfile from './pages/PetProfile.jsx'
 import AddPet from './pages/AddPet.jsx'
 import FamilyTree from './pages/FamilyTree.jsx'
 import Gallery from './pages/Gallery.jsx'
+import EditPet from './pages/EditPet.jsx'
 
 function ImportPage({ importPet }) {
   const [status, setStatus] = useState(null)
@@ -43,7 +44,7 @@ function ImportPage({ importPet }) {
 }
 
 export default function App() {
-  const { pets, addPet, deletePet, addComment, addAnecdote, setCartoonAvatar, addPhoto, exportPet, importPet } = usePets()
+  const { pets, addPet, updatePet, deletePet, addComment, addAnecdote, setCartoonAvatar, addPhoto, exportPet, importPet } = usePets()
   const { username, saveUsername } = useUser()
 
   return (
@@ -62,11 +63,13 @@ export default function App() {
             deletePet={deletePet}
             addPhoto={addPhoto}
             exportPet={exportPet}
+            updatePet={updatePet}
           />
         } />
         <Route path="/add" element={<AddPet pets={pets} addPet={addPet} username={username} />} />
         <Route path="/tree" element={<FamilyTree pets={pets} />} />
         <Route path="/gallery" element={<Gallery pets={pets} />} />
+        <Route path="/edit/:id" element={<EditPet pets={pets} updatePet={updatePet} />} />
         <Route path="/import" element={<ImportPage importPet={importPet} />} />
         <Route path="*" element={
           <div className="page container" style={{ textAlign: 'center', paddingTop: '4rem' }}>

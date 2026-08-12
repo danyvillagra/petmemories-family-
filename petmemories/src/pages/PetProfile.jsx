@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import './PetProfile.css'
 
@@ -7,10 +7,11 @@ const SPECIES_EMOJI = {
   'Pez': '🐠', 'Tortuga': '🐢', 'Hámster': '🐹', 'Otro': '🐾',
 }
 
-export default function PetProfile({ pets, username, addComment, addAnecdote, setCartoonAvatar, deletePet, addPhoto, exportPet }) {
+export default function PetProfile({ pets, username, addComment, addAnecdote, setCartoonAvatar, deletePet, addPhoto, exportPet, updatePet }) {
   const { id } = useParams()
   const navigate = useNavigate()
   const pet = pets.find(p => p.id === id)
+  const profilePhotoInputRef = useRef()
 
   const [commentText, setCommentText] = useState('')
   const [anecdoteTitle, setAnecdoteTitle] = useState('')
@@ -117,6 +118,24 @@ export default function PetProfile({ pets, username, addComment, addAnecdote, se
     setGeneratingAvatar(false)
   }
 
+  const handleProfilePhoto = (e) => {
+    const file = e.target.files[0]
+    if (!file) return
+    const img = new Image()
+    const url = URL.createObjectURL(file)
+    img.onload = () => {
+      const canvas = document.createElement('canvas')
+      const maxW = 400
+      const ratio = Math.min(1, maxW / img.width)
+      canvas.width = img.width * ratio
+      canvas.height = img.height * ratio
+      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height)
+      updatePet(pet.id, { profilePhoto: canvas.toDataURL('image/jpeg', 0.8) })
+      URL.revokeObjectURL(url)
+    }
+    img.src = url
+  }
+
   const handleDelete = () => {
     if (confirm(`¿Eliminar a ${pet.name}? Esta acción no se puede deshacer.`)) {
       deletePet(pet.id)
@@ -146,13 +165,25 @@ export default function PetProfile({ pets, username, addComment, addAnecdote, se
         <div className="profile-header card fade-in" style={{ '--pet-color': pet.color || '#E8875A' }}>
           <div className="profile-header-bg" style={{ background: `linear-gradient(135deg, ${pet.color || '#E8875A'}33 0%, ${pet.color || '#E8875A'}11 100%)` }} />
           <div className="profile-header-content">
-            <div className="profile-avatar-wrap">
+            <div className="profile-avatar-wrap" style={{ cursor: 'pointer', position: 'relative' }} onClick={() => profilePhotoInputRef.current.click()} title="Cambiar foto de perfil">
               {pet.cartoonAvatar || pet.profilePhoto ? (
                 <img src={pet.cartoonAvatar || pet.profilePhoto} alt={pet.name} className="profile-avatar" />
               ) : (
                 <div className="profile-avatar-placeholder">{emoji}</div>
               )}
+              <div style={{
+                position: 'absolute', inset: 0, borderRadius: '50%',
+                background: 'rgba(0,0,0,0.35)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                opacity: 0, transition: 'opacity 0.2s',
+              }}
+                onMouseEnter={e => e.currentTarget.style.opacity = 1}
+                onMouseLeave={e => e.currentTarget.style.opacity = 0}
+              >
+                <span style={{ fontSize: '1.4rem' }}>📷</span>
+              </div>
               {!isAlive && <span className="profile-rainbow">🌈</span>}
+              <input ref={profilePhotoInputRef} type="file" accept="image/*" capture="environment" onChange={handleProfilePhoto} style={{ display: 'none' }} />
             </div>
             <div className="profile-meta">
               <div className="profile-name-row">
@@ -161,6 +192,17 @@ export default function PetProfile({ pets, username, addComment, addAnecdote, se
                   {isAlive ? '❤️ Activo' : '🌈 En el recuerdo'}
                 </span>
               </div>
+              {pet.nicknames && pet.nicknames.length > 0 && (
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', marginBottom: '0.4rem' }}>
+                  {pet.nicknames.map(nick => (
+                    <span key={nick} style={{
+                      background: `${pet.color || '#E8875A'}33`,
+                      color: 'var(--text-muted)', borderRadius: 20,
+                      padding: '0.15rem 0.65rem', fontSize: '0.82rem', fontStyle: 'italic',
+                    }}>"{nick}"</span>
+                  ))}
+                </div>
+              )}
               <div className="profile-tags">
                 <span className="badge badge-species">{pet.species}</span>
                 {pet.breed && <span className="profile-breed">{pet.breed}</span>}
@@ -178,6 +220,7 @@ export default function PetProfile({ pets, username, addComment, addAnecdote, se
             </div>
           </div>
           <div className="profile-header-actions">
+            <Link to={`/edit/${pet.id}`} className="btn btn-secondary btn-sm">✏️ Editar</Link>
             <button onClick={() => exportPet(pet.id)} className="btn btn-secondary btn-sm">📤 Exportar</button>
             <button onClick={handleDelete} className="btn btn-sm" style={{ background: '#FEE2E2', color: '#991B1B', borderColor: '#FCA5A5' }}>🗑️ Eliminar</button>
           </div>
