@@ -50,5 +50,23 @@
       "pet-6e6d2b2f"
     ],
     "offspring": []
+  },
+  {
+    "id": "pet-a4635eac",
+    "comments": [],
+    "anecdotes": [],
+    "gallery": [],
+    "addedBy": "Papadon",
+    "lastModified": "2026-09-03",
+    "name": "Gema",
+    "species": "Gato",
+    "breed": "Gris Peludo",
+    "gender": "hembra",
+    "birthYear": 2019,
+    "deathYear": 2026,
+    "color": "#E8875A",
+    "description": "",
+    "parents": [],
+    "offspring": []
   }
 ]
