@@ -1,0 +1,64 @@
+[
+  {
+    "id": "pet-luna001",
+    "name": "Luna",
+    "species": "Perro",
+    "breed": "Labrador",
+    "birthDate": "2020-03-15",
+    "color": "#f59e0b",
+    "nickname": "Lunita",
+    "parents": [],
+    "offspring": ["pet-simba01"],
+    "comments": [],
+    "anecdotes": [
+      {
+        "id": "a-001",
+        "title": "Primera vez en la playa",
+        "story": "Luna vio el mar por primera vez y salió corriendo a perseguir las olas. ¡No podíamos pararla!",
+        "date": "2021-01-10"
+      }
+    ],
+    "gallery": [],
+    "addedBy": "familia",
+    "lastModified": "2026-08-12"
+  },
+  {
+    "id": "pet-thor001",
+    "name": "Thor",
+    "species": "Perro",
+    "breed": "Pastor Alemán",
+    "birthDate": "2019-07-20",
+    "color": "#6366f1",
+    "nickname": "Thorito",
+    "parents": [],
+    "offspring": ["pet-simba01"],
+    "comments": [],
+    "anecdotes": [],
+    "gallery": [],
+    "addedBy": "familia",
+    "lastModified": "2026-08-12"
+  },
+  {
+    "id": "pet-simba01",
+    "name": "Simba",
+    "species": "Perro",
+    "breed": "Labrador/Pastor mix",
+    "birthDate": "2022-11-05",
+    "color": "#10b981",
+    "nickname": "El Rey",
+    "parents": ["pet-luna001", "pet-thor001"],
+    "offspring": [],
+    "comments": [
+      {
+        "id": "c-001",
+        "author": "Dany",
+        "date": "2026-08-12",
+        "text": "¡Heredó lo mejor de sus padres!"
+      }
+    ],
+    "anecdotes": [],
+    "gallery": [],
+    "addedBy": "familia",
+    "lastModified": "2026-08-12"
+  }
+]
