@@ -1,1 +1,20 @@
-[]
+[
+  {
+    "id": "pet-6e6d2b2f",
+    "comments": [],
+    "anecdotes": [],
+    "gallery": [],
+    "addedBy": "Papadon",
+    "lastModified": "2026-09-03",
+    "name": "Penelope",
+    "species": "Perro",
+    "breed": "Salchicha con Fox Terrier",
+    "gender": "hembra",
+    "birthYear": 2008,
+    "deathYear": 2018,
+    "color": "#E8875A",
+    "description": "Penelope vivio en Luna Vinera, el el departamento Fortaleza 8B, en la casa de Pa i Perez y termino en la casa de Abuela Graciela-",
+    "parents": [],
+    "offspring": []
+  }
+]
