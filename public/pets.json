@@ -1,23 +1,5 @@
 [
   {
-    "id": "pet-thor001",
-    "name": "Thor",
-    "species": "Perro",
-    "breed": "Pastor Alemán",
-    "birthDate": "2019-07-20",
-    "color": "#6366f1",
-    "nickname": "Thorito",
-    "parents": [],
-    "offspring": [
-      "pet-simba01"
-    ],
-    "comments": [],
-    "anecdotes": [],
-    "gallery": [],
-    "addedBy": "familia",
-    "lastModified": "2026-08-12"
-  },
-  {
     "id": "pet-simba01",
     "name": "Simba",
     "species": "Perro",
@@ -25,9 +7,7 @@
     "birthDate": "2022-11-05",
     "color": "#10b981",
     "nickname": "El Rey",
-    "parents": [
-      "pet-thor001"
-    ],
+    "parents": [],
     "offspring": [],
     "comments": [
       {
